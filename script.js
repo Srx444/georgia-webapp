@@ -1,7 +1,7 @@
 const params = new URLSearchParams(window.location.search);
 const userId = params.get('userId');
 
-fetch(`/api/get-route/${userId}`)
+fetch(`/api/save-route?userId=${userId}`)
   .then(response => response.json())
   .then(data => {
     const itineraryData = data || {};
