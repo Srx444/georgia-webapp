@@ -9,7 +9,7 @@ fetch(`/api/save-route?userId=${userId}`)
     document.getElementById('city').textContent = `Ваш маршрут по ${itineraryData.city || 'Батуми'}`;
 
     const carouselInner = document.getElementById('carousel-inner');
-    const photos = itineraryData.photos || ['https://source.unsplash.com/1600x400/?Batumi'];
+const photos = itineraryData.photos || ['https://images.pexels.com/photos/164631/pexels-photo-164631.jpeg'];
     photos.forEach((photo, index) => {
       carouselInner.innerHTML += `
         <div class="carousel-item ${index === 0 ? 'active' : ''}">
