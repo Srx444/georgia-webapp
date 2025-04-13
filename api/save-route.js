@@ -1,26 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const routesFilePath = path.resolve('./routes.json');
-
-// Убедимся, что файл существует
-function ensureRoutesFile() {
-  if (!fs.existsSync(routesFilePath)) {
-    fs.writeFileSync(routesFilePath, JSON.stringify({}), 'utf-8');
-  }
-}
-
-// Получить все маршруты из файла
-function readRoutes() {
-  ensureRoutesFile();
-  const fileData = fs.readFileSync(routesFilePath, 'utf-8');
-  return JSON.parse(fileData);
-}
-
-// Сохранить все маршруты в файл
-function writeRoutes(routes) {
-  fs.writeFileSync(routesFilePath, JSON.stringify(routes, null, 2), 'utf-8');
-}
+const filePath = path.resolve('./api/routes.json');
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -30,28 +11,46 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing userId or data' });
     }
 
-    const routes = readRoutes();
-    routes[userId.toString()] = data;
-    writeRoutes(routes);
+    let routes = {};
 
-    const routeUrl = `https://georgia-webapp.vercel.app?userId=${userId}`;
-    res.status(200).json({ status: 'ok', routeUrl });
+    try {
+      if (fs.existsSync(filePath)) {
+        const jsonData = fs.readFileSync(filePath, 'utf8');
+        routes = JSON.parse(jsonData);
+      }
+    } catch (error) {
+      console.error('Error reading file:', error);
+    }
+
+    routes[userId] = data;
+
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(routes, null, 2));
+      return res.status(200).json({
+        status: 'ok',
+        routeUrl: `https://georgia-webapp.vercel.app?userId=${userId}`
+      });
+    } catch (error) {
+      return res.status(500).json({ error: 'Failed to save route' });
+    }
   }
 
   else if (req.method === 'GET') {
-    const userId = req.query.userId;
-    if (!userId) {
-      return res.status(400).json({ error: 'Missing userId in query' });
+    const { userId } = req.query;
+
+    try {
+      const jsonData = fs.readFileSync(filePath, 'utf8');
+      const routes = JSON.parse(jsonData);
+      const data = routes[userId];
+
+      if (!data) {
+        return res.status(404).json({ error: 'Route not found' });
+      }
+
+      return res.status(200).json(data);
+    } catch (error) {
+      return res.status(500).json({ error: 'Failed to load route' });
     }
-
-    const routes = readRoutes();
-    const route = routes[userId.toString()];
-
-    if (!route) {
-      return res.status(404).json({ error: 'Route not found' });
-    }
-
-    res.status(200).json(route);
   }
 
   else {
