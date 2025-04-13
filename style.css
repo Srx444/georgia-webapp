@@ -1,0 +1,15 @@
+#map {
+  height: 400px;
+  width: 100%;
+}
+.carousel-item img {
+  max-height: 400px;
+  object-fit: cover;
+}
+.accordion-button {
+  transition: all 0.3s ease;
+}
+.btn-primary {
+  background-color: #1a73e8;
+  border: none;
+}
