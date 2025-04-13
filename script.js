@@ -32,7 +32,15 @@ fetch(`/api/save-route?userId=${userId}`)
               ${day.activities.map(a => `
                 <h5>${a.name}</h5>
                 <p>${a.description}</p>
-                <a href="https://maps.google.com/?q=${a.lat},${a.lon}" target="_blank" class="btn btn-primary mb-3">Открыть на карте</a>
+          <div class="mb-3">
+  <a href="https://maps.google.com/?q=${a.lat},${a.lon}" target="_blank" class="btn btn-outline-primary btn-sm me-2">
+    Открыть в Google Картах
+  </a>
+  <a href="https://yandex.com/maps/?ll=${a.lon},${a.lat}&z=16" target="_blank" class="btn btn-outline-secondary btn-sm">
+    Открыть в Яндекс Картах
+  </a>
+</div>
+
               `).join('')}
             </div>
           </div>
